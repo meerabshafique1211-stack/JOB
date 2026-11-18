@@ -17,8 +17,8 @@ Steps that need you (credentials only you can create):
 
 Supabase dashboard → **Authentication → URL Configuration**
 
-- **Site URL:** your Vercel URL, e.g. `https://jobsapply-xxxx.vercel.app`
-- **Redirect URLs:** add `https://jobsapply-xxxx.vercel.app/auth/callback`
+- **Site URL:** your Vercel URL, `https://jobsapply-three.vercel.app`
+- **Redirect URLs:** add `https://jobsapply-three.vercel.app/auth/callback`
 
 Then open the site and use **Create account** (email + password) with your Gmail address, confirm the email, and sign in.
 
@@ -47,7 +47,7 @@ redirect URI in Google Cloud.
      `gmail.readonly` is a *restricted* scope, Google will then show an "unverified app" warning for your own
      account (you can click through it). Full verification with a security assessment is only needed for public apps.
 4. **Credentials → Create credentials → OAuth client ID → Web application.**
-   - Authorized redirect URI: `https://<your-vercel-domain>/api/gmail/callback`
+   - Authorized redirect URI: `https://jobsapply-three.vercel.app/api/gmail/callback`
 5. Copy the client ID and secret into Vercel env vars `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` (Sensitive), then redeploy.
 6. In the app: **Settings → Integrations → Connect Gmail.** The dashboard shows the connected account. Your password is never
    requested. Tokens are encrypted with AES-256-GCM (`TOKEN_ENCRYPTION_KEY`) and used only on the server.
@@ -60,18 +60,8 @@ marked *verified* (by Hunter's verifier) or *published on a public page* (you su
 
 ## 5. GitHub repository
 
-This session could read `meerabshafique1211-stack/JOB` but **could not push** (the Claude GitHub App is not installed
-for that account). To get the code into the repo:
-
-- Install the Claude GitHub App: https://github.com/apps/claude/installations/select_target, select the `JOB` repo,
-  then ask Claude to push; **or**
-- download the source zip from the conversation and push it yourself:
-  ```bash
-  unzip jobsapply-source.zip && cd job
-  git remote add origin https://github.com/meerabshafique1211-stack/JOB.git
-  git push -u origin main
-  ```
-  Then in Vercel → Project → Settings → Git → Connect the repository so every push redeploys.
+Code: https://github.com/meerabshafique1211-stack/JOB (branch `main`). To make every push deploy automatically,
+open Vercel → **jobsapply** → Settings → Git → **Connect Git Repository** → choose `meerabshafique1211-stack/JOB`.
 
 ## 6. Database migrations
 
