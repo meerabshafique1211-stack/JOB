@@ -50,7 +50,7 @@ export async function sendAndRecord(sb: SupabaseClient, opts: {
     draft_id: opts.draftId, contact_id: opts.contactId, job_id: opts.jobId, application_id: opts.applicationId,
     to_email: opts.to.toLowerCase(), subject: opts.subject, body: opts.body, kind: opts.kind,
     gmail_message_id: res.id, gmail_thread_id: res.threadId, rfc_message_id: res.rfcId,
-    dedupe_key: dedupeKey(opts.to, opts.jobId, opts.kind + (opts.applicationId ? ':application' : '')),
+    dedupe_key: dedupeKey(opts.to, opts.jobId, opts.kind),
   }).select('id').single();
   if (error) throw new Error(`Sent (Gmail id ${res.id}) but failed to record: ${error.message}`);
 

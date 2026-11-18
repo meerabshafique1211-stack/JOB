@@ -155,7 +155,7 @@ export async function executeBatch(fd: FormData) {
     if (app.channel === 'email' && app.apply_email) {
       const to = app.apply_email.toLowerCase();
       if (await isDoNotContact(supabase, to)) { await setApp({ approval_status: 'failed', result_message: 'Application address is on the Do-Not-Contact list.' }); tally.skipped++; continue; }
-      const { data: dup } = await supabase.from('sent_emails').select('id').eq('dedupe_key', dedupeKey(to, app.job_id, 'cold:application')).maybeSingle();
+      const { data: dup } = await supabase.from('sent_emails').select('id').eq('dedupe_key', dedupeKey(to, app.job_id, 'application')).maybeSingle();
       if (dup) { await setApp({ approval_status: 'submitted', result_message: 'Duplicate prevented: an application email was already sent.' }); tally.duplicate++; continue; }
       if (!gmail) { await setApp({ result_message: gmailError }); tally.failed++; continue; }
       try {
@@ -169,7 +169,7 @@ export async function executeBatch(fd: FormData) {
         const res = await sendAndRecord(supabase, {
           token: gmail.token, fromEmail: gmail.email, fromName: profile.full_name ?? '', to, subject,
           body: cover?.content ?? `Dear Hiring Team,\n\nPlease find attached my CV for the ${app.jobs?.title} position.\n\n${profile.email_signature ?? ''}`,
-          kind: 'cold', jobId: app.job_id, contactId: null, draftId: null, applicationId: app.id, attachments: atts,
+          kind: 'application', jobId: app.job_id, contactId: null, draftId: null, applicationId: app.id, attachments: atts,
         });
         await setApp({ approval_status: 'submitted', submitted_at: new Date().toISOString(), confirmation: `Gmail message ${res.gmailId}`, status: 'Applied', result_message: `Application emailed to ${to}.` });
         await supabase.from('jobs').update({ pipeline_status: 'Applied' }).eq('id', app.job_id);

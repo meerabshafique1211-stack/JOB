@@ -84,8 +84,12 @@ async function storeJobs(sb: any, raw: RawJob[], profile: any) {
   for (const part of chunk(fresh, 50)) {
     const rows = part.map((j) => ({ ...j, company_id: companyIds.get(normalizeName(j.company_name)) ?? null }));
     const { data, error } = await sb.from('jobs').upsert(rows, { onConflict: 'canonical_url', ignoreDuplicates: true }).select('id');
-    if (error) throw new Error(error.message);
-    inserted += data?.length ?? 0;
+    if (!error) { inserted += data?.length ?? 0; continue; }
+    // A row in this chunk hit another uniqueness rule (e.g. same company + title + id): insert one by one, skipping duplicates
+    for (const row of rows) {
+      const { data: one } = await sb.from('jobs').upsert(row, { onConflict: 'canonical_url', ignoreDuplicates: true }).select('id');
+      inserted += one?.length ?? 0;
+    }
   }
   return { inserted, duplicates: candidates.length - fresh.length, filteredOut, refreshed: seenAgain.length };
 }
