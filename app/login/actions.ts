@@ -5,11 +5,11 @@ import { env } from '@/lib/env';
 import { getOrigin } from '@/lib/origin';
 import { str } from '@/lib/utils';
 
-function back(q: string) {
+function back(q: string): never {
   redirect(`/login?${q}`);
 }
 
-function checkEmail(email: string) {
+function checkEmail(email: string): void {
   if (!env.allowedEmail) back('err=' + encodeURIComponent('ALLOWED_EMAIL is not configured on the server.'));
   if (email.toLowerCase() !== env.allowedEmail) back('err=' + encodeURIComponent('This is a private application. Only the owner account can sign in.'));
 }
